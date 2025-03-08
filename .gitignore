@@ -10,7 +10,7 @@ bin/
 # IntelliJ IDEA
 .idea/
 *.iml
-
+libs/
 # Gradle
 .gradle
 **/build/

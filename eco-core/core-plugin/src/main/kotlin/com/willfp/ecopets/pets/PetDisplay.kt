@@ -85,7 +85,9 @@ class PetDisplay(
                 if (trackedPet != null && trackedPet.petEntity != null) {
                     val entity = trackedPet.petEntity
                     if (entity is ModelEnginePetEntity) {
-                        entity.updateAnimation(isStateChange) // Only force update on state change
+                        // Update animations every tick, but only force state check on obvious state changes
+                        // This ensures animations are checked regularly while avoiding unnecessary work
+                        entity.updateAnimation(isStateChange) 
                     }
                 }
             } 

@@ -27,13 +27,18 @@ class PetSkin(
         // Get the default idle animation first - we'll use this if other animations are missing
         val defaultAnimation = config.getStringOrNull("modelengine-animations.idle") ?: "idle"
         
+        // More sensitive movement detection
+        // XZ plane movement (horizontal)
+        val isMovingHorizontally = player.velocity.setY(0).lengthSquared() > 0.003 
+            || player.location.direction.setY(0).lengthSquared() > 0.5
+        
         return when {
             player.isFlying || player.isGliding -> config.getStringOrNull("modelengine-animations.flying") ?: defaultAnimation
             player.isSwimming -> config.getStringOrNull("modelengine-animations.swimming") ?: defaultAnimation
             player.isSneaking -> config.getStringOrNull("modelengine-animations.sneaking") ?: defaultAnimation
             player.isSprinting -> config.getStringOrNull("modelengine-animations.running") ?: defaultAnimation
-            player.isInsideVehicle -> defaultAnimation
-            player.velocity.lengthSquared() > 0.01 -> config.getStringOrNull("modelengine-animations.walking") ?: defaultAnimation
+            player.isInsideVehicle -> config.getStringOrNull("modelengine-animations.riding") ?: defaultAnimation
+            isMovingHorizontally -> config.getStringOrNull("modelengine-animations.walking") ?: defaultAnimation
             else -> defaultAnimation
         }
     }
