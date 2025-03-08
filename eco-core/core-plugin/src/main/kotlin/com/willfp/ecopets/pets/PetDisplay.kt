@@ -57,7 +57,12 @@ class PetDisplay(
             }
 
             if (!pet.entityTexture.contains(":")) {
-                stand.setRotation((20 * tick / (2 * PI)).toFloat(), 0f)
+                if (plugin.configYml.getBool("pet-entity.spinning.enabled")) {
+                    val spinSpeed = plugin.configYml.getDoubleOrNull("pet-entity.spinning.speed") ?: 20.0
+                    stand.setRotation((spinSpeed * tick / (2 * PI)).toFloat(), 0f)
+                } else {
+                    stand.setRotation(player.location.yaw, 0f)
+                }
             }
         }
     }

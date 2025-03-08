@@ -261,6 +261,9 @@ level-gui:
 pet-entity:
   enabled: true # If you disable this, there will be no floating pets
   name: "%player%&f's %pet%&f (Lvl. %level%)"
+  spinning:
+    enabled: true # If you disable this, pets will not spin
+    speed: 20 # The speed at which pets spin (higher = faster)
 
 level-up:
   message:
