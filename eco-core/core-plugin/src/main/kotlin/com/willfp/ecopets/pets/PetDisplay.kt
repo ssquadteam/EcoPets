@@ -24,6 +24,7 @@ class PetDisplay(
     private var tick = 0
 
     private val trackedEntities = mutableMapOf<UUID, PetArmorStand>()
+    private val playerStates = mutableMapOf<UUID, PlayerState>()
 
     fun tickAll() {
         for (player in Bukkit.getOnlinePlayers()) {
@@ -58,6 +59,23 @@ class PetDisplay(
                 stand.teleport(location)
             }
 
+            // Check for player state changes
+            val previousState = playerStates[player.uniqueId]
+            val currentState = PlayerState(
+                isFlying = player.isFlying || player.isGliding,
+                isSwimming = player.isSwimming,
+                isSneaking = player.isSneaking,
+                isSprinting = player.isSprinting,
+                isInVehicle = player.isInsideVehicle,
+                isMoving = player.velocity.lengthSquared() > 0.01
+            )
+            
+            // Store current state for comparison in next tick
+            playerStates[player.uniqueId] = currentState
+            
+            // Check if this is a state change (which should trigger animation updates)
+            val isStateChange = previousState != currentState
+            
             // Check if it's a ModelEngine pet and update its animation
             if (pet.entityTexture.contains(":") && pet.entityTexture.startsWith("modelengine:")) {
                 // Find the tracked pet entity
@@ -67,7 +85,7 @@ class PetDisplay(
                 if (trackedPet != null && trackedPet.petEntity != null) {
                     val entity = trackedPet.petEntity
                     if (entity is ModelEnginePetEntity) {
-                        entity.updateAnimation()
+                        entity.updateAnimation(isStateChange) // Only force update on state change
                     }
                 }
             } 
@@ -144,6 +162,7 @@ class PetDisplay(
     private fun remove(player: Player) {
         trackedEntities[player.uniqueId]?.stand?.remove()
         trackedEntities.remove(player.uniqueId)
+        playerStates.remove(player.uniqueId) // Clean up player state tracking
     }
 
     @EventHandler
@@ -176,5 +195,14 @@ class PetDisplay(
         val stand: ArmorStand,
         val pet: Pet,
         val petEntity: Any? = null
+    )
+
+    private data class PlayerState(
+        val isFlying: Boolean = false,
+        val isSwimming: Boolean = false,
+        val isSneaking: Boolean = false,
+        val isSprinting: Boolean = false,
+        val isInVehicle: Boolean = false,
+        val isMoving: Boolean = false
     )
 }

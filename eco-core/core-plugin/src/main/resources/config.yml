@@ -3,6 +3,9 @@
 # by Auxilor
 #
 
+# Advanced options
+debug-logging: false  # Set to true to enable detailed debugging logs for ModelEngine animations
+
 # Even if eco is set up to use a database, you can
 # force EcoPets to save to local storage to disable
 # cross-server sync.
