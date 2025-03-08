@@ -3,6 +3,8 @@ package com.willfp.ecopets.pets
 import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.util.NumberUtils
 import com.willfp.eco.util.formatEco
+import com.willfp.ecopets.pets.entity.ModelEnginePetEntity
+import com.willfp.ecopets.pets.entity.PetEntity
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.ArmorStand
@@ -56,7 +58,21 @@ class PetDisplay(
                 stand.teleport(location)
             }
 
-            if (!pet.entityTexture.contains(":")) {
+            // Check if it's a ModelEngine pet and update its animation
+            if (pet.entityTexture.contains(":") && pet.entityTexture.startsWith("modelengine:")) {
+                // Find the tracked pet entity
+                val trackedPet = trackedEntities[player.uniqueId]
+                
+                // Try to update animation if possible
+                if (trackedPet != null && trackedPet.petEntity != null) {
+                    val entity = trackedPet.petEntity
+                    if (entity is ModelEnginePetEntity) {
+                        entity.updateAnimation()
+                    }
+                }
+            } 
+            // Handle non-ModelEngine pets (skull-based)
+            else if (!pet.entityTexture.contains(":")) {
                 if (plugin.configYml.getBool("pet-entity.spinning.enabled")) {
                     val spinSpeed = plugin.configYml.getDoubleOrNull("pet-entity.spinning.speed") ?: 20.0
                     stand.setRotation((spinSpeed * tick / (2 * PI)).toFloat(), 0f)
@@ -108,9 +124,10 @@ class PetDisplay(
             }
 
             val location = getLocation(player)
-            val stand = pet.makePetEntity(player).spawn(location)
+            val petEntity = pet.makePetEntity(player)
+            val stand = petEntity.spawn(location)
 
-            trackedEntities[player.uniqueId] = PetArmorStand(stand, pet)
+            trackedEntities[player.uniqueId] = PetArmorStand(stand, pet, petEntity)
         }
 
         return trackedEntities[player.uniqueId]?.stand
@@ -157,6 +174,7 @@ class PetDisplay(
 
     private data class PetArmorStand(
         val stand: ArmorStand,
-        val pet: Pet
+        val pet: Pet,
+        val petEntity: Any? = null
     )
 }

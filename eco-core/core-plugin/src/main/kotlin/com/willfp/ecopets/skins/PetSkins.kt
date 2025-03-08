@@ -161,13 +161,32 @@ object PetSkins : ConfigCategory("skin", "skins") {
                 // Create example skin
                 val exampleFile = File(skinsDirectory, "example.yml")
                 if (!exampleFile.exists()) {
-                    // Create a simple example skin file
+                    exampleFile.createNewFile()
+                    
+                    // Create a comprehensive example with all available settings
                     val exampleContent = """
                         # Example skin configuration
                         display-name: "&aExample Skin"
+                        
+                        # Texture head ID (Base64 encoded)
                         texture-head-id: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjVjNGQyNGFmZmRkNDgxMjI1ZTNlM2MxMmNiOWU1YzYzNWJlN2Y1YzUzYTA5YzY4OWNkNzU5ZjRhODZkYjEifX19"
-                        modelengine-id: "example_model"
+                        
+                        # ModelEngine settings
                         use-modelengine: false
+                        modelengine-id: "example_model"
+                        
+                        # ModelEngine animation settings (only used if use-modelengine is true)
+                        modelengine-animations:
+                          enabled: false  # Set to true to use custom animations
+                          idle: "idle"    # Animation when standing still
+                          walking: "walk" # Animation when walking
+                          running: "run"  # Animation when sprinting
+                          swimming: "swim" # Animation when swimming
+                          flying: "fly"   # Animation when flying/gliding
+                          sneaking: "sneak" # Animation when sneaking
+                          
+                        # Note: If any animation is left blank or not included,
+                        # the system will use the idle animation as a fallback
                     """.trimIndent()
                     
                     exampleFile.writeText(exampleContent)

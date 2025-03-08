@@ -12,6 +12,31 @@ class PetSkin(
     val textureHeadID: String = config.getString("texture-head-id")
     val modelEngineID: String? = config.getStringOrNull("modelengine-id")
     val useModelEngine: Boolean = config.getBool("use-modelengine")
+    
+    // Model Engine animation settings
+    val useCustomAnimations: Boolean = config.getBool("modelengine-animations.enabled")
+    
+    /**
+     * Get the appropriate animation for the player's current state.
+     */
+    fun getAnimationForState(player: Player): String {
+        if (!useModelEngine || !useCustomAnimations) {
+            return "idle" // Default animation if not using custom animations
+        }
+        
+        // Get the default idle animation first - we'll use this if other animations are missing
+        val defaultAnimation = config.getStringOrNull("modelengine-animations.idle") ?: "idle"
+        
+        return when {
+            player.isFlying || player.isGliding -> config.getStringOrNull("modelengine-animations.flying") ?: defaultAnimation
+            player.isSwimming -> config.getStringOrNull("modelengine-animations.swimming") ?: defaultAnimation
+            player.isSneaking -> config.getStringOrNull("modelengine-animations.sneaking") ?: defaultAnimation
+            player.isSprinting -> config.getStringOrNull("modelengine-animations.running") ?: defaultAnimation
+            player.isInsideVehicle -> defaultAnimation
+            player.velocity.lengthSquared() > 0.01 -> config.getStringOrNull("modelengine-animations.walking") ?: defaultAnimation
+            else -> defaultAnimation
+        }
+    }
 
     override fun getID(): String {
         return id
