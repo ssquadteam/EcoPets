@@ -5,6 +5,7 @@ import com.willfp.eco.core.integrations.IntegrationLoader
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.ecopets.commands.CommandEcoPets
 import com.willfp.ecopets.commands.CommandPets
+import com.willfp.ecopets.commands.CommandSkin
 import com.willfp.ecopets.libreforge.ConditionHasActivePet
 import com.willfp.ecopets.libreforge.ConditionHasPet
 import com.willfp.ecopets.libreforge.ConditionHasPetLevel
@@ -23,6 +24,9 @@ import com.willfp.ecopets.pets.activePetLevel
 import com.willfp.ecopets.pets.hasPet
 import com.willfp.ecopets.pets.entity.ModelEnginePetEntity
 import com.willfp.ecopets.pets.entity.PetEntity
+import com.willfp.ecopets.skins.PetSkins
+import com.willfp.ecopets.skins.activeSkin
+import com.willfp.ecopets.skins.hasActiveSkin
 import com.willfp.libreforge.SimpleProvidedHolder
 import com.willfp.libreforge.conditions.Conditions
 import com.willfp.libreforge.effects.Effects
@@ -36,7 +40,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 class EcoPetsPlugin : LibreforgePlugin() {
-    private val petDisplay = PetDisplay(this)
+    internal val petDisplay = PetDisplay(this)
 
     init {
         instance = this
@@ -44,7 +48,8 @@ class EcoPetsPlugin : LibreforgePlugin() {
 
     override fun loadConfigCategories(): List<ConfigCategory> {
         return listOf(
-            Pets
+            Pets,
+            PetSkins
         )
     }
 
@@ -85,6 +90,21 @@ class EcoPetsPlugin : LibreforgePlugin() {
             }
             pets.toString()
         }.register()
+
+        PlayerPlaceholder(
+            this,
+            "skin_id"
+        ) { it.activeSkin?.id ?: "" }.register()
+
+        PlayerPlaceholder(
+            this,
+            "skin_display"
+        ) { it.activeSkin?.displayName ?: "" }.register()
+
+        PlayerPlaceholder(
+            this,
+            "skin_isactive"
+        ) { if (it.hasActiveSkin()) "yes" else "no" }.register()
     }
 
     override fun handleReload() {
@@ -99,13 +119,21 @@ class EcoPetsPlugin : LibreforgePlugin() {
 
     override fun handleDisable() {
         petDisplay.shutdown()
+        
+        // Save skin data on server shutdown to ensure no data is lost
+        try {
+            PetSkins.saveSkinData()
+            logger.info("Saved pet skin data on shutdown")
+        } catch (e: Exception) {
+            logger.warning("Failed to save skin data on shutdown: ${e.message}")
+        }
     }
 
     override fun loadIntegrationLoaders(): List<IntegrationLoader> {
         return listOf(
             IntegrationLoader("ModelEngine") {
-                PetEntity.registerPetEntity("modelengine") { pet, id ->
-                    ModelEnginePetEntity(pet, id, this)
+                PetEntity.registerPetEntity("modelengine") { pet, id, player ->
+                    ModelEnginePetEntity(pet, id, this, player)
                 }
             }
         )

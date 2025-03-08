@@ -5,12 +5,14 @@ import com.willfp.ecopets.pets.Pet
 import com.willfp.modelenginebridge.ModelEngineBridge
 import org.bukkit.Location
 import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.Player
 
 class ModelEnginePetEntity(
     pet: Pet,
     private val modelID: String,
-    private val plugin: EcoPetsPlugin
-) : PetEntity(pet) {
+    private val plugin: EcoPetsPlugin,
+    player: Player
+) : PetEntity(pet, player) {
     override fun spawn(location: Location): ArmorStand {
         val stand = emptyArmorStandAt(location, pet)
 

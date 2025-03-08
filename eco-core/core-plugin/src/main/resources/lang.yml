@@ -24,6 +24,14 @@ messages:
   no-pet-active: "&cYou don't have a pet active!"
   activated-pet: "&fYou have activated the %pet%&f pet!"
   deactivated-pet: "&fYou have deactivated the %pet%&f pet!"
+  
+  # Skin-related messages
+  must-specify-skin: "&cYou must specify a skin! Use /pets skin set <skinID>"
+  specify-skin-id: "&cYou must specify a skin ID!"
+  invalid-skin: "&cInvalid skin: %skin%"
+  set-skin: "&fYou have set your pet skin to %skin%&f!"
+  no-skin-active: "&cYou don't have an active skin!"
+  removed-skin: "&fYou have removed the %skin%&f skin!"
 
 menu:
   title: "Pets"

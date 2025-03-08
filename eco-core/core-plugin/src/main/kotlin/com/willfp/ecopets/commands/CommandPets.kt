@@ -10,6 +10,7 @@ class CommandPets(plugin: EcoPlugin) : PluginCommand(plugin, "pets", "ecopets.co
     init {
         this.addSubcommand(CommandActivate(plugin))
             .addSubcommand(CommandDeactivate(plugin))
+            .addSubcommand(CommandSkin(plugin))
     }
 
     override fun onExecute(player: CommandSender, args: List<String>) {

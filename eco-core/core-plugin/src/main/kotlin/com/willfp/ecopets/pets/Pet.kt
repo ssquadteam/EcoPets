@@ -22,6 +22,7 @@ import com.willfp.ecopets.EcoPetsPlugin
 import com.willfp.ecopets.api.event.PlayerPetExpGainEvent
 import com.willfp.ecopets.api.event.PlayerPetLevelUpEvent
 import com.willfp.ecopets.pets.entity.PetEntity
+import com.willfp.ecopets.skins.activeSkin
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.conditions.ConditionList
 import com.willfp.libreforge.conditions.Conditions
@@ -237,8 +238,8 @@ class Pet(
         }.register()
     }
 
-    fun makePetEntity(): PetEntity {
-        return PetEntity.create(this)
+    fun makePetEntity(player: Player): PetEntity {
+        return PetEntity.create(this, player)
     }
 
     fun getLevel(level: Int): PetLevel = levels.get(level) {
@@ -425,6 +426,11 @@ class Pet(
 
     override fun hashCode(): Int {
         return Objects.hash(this.id)
+    }
+
+    fun getEntityTextureWithSkin(player: Player): String {
+        val skin = player.activeSkin
+        return skin?.getTextureToUse() ?: entityTexture
     }
 }
 

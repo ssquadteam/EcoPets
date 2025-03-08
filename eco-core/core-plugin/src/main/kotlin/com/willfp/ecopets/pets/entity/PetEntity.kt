@@ -4,32 +4,34 @@ import com.willfp.ecopets.pets.Pet
 import org.bukkit.Location
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 
 abstract class PetEntity(
-    val pet: Pet
+    val pet: Pet,
+    val player: Player
 ) {
     abstract fun spawn(location: Location): ArmorStand
 
     companion object {
-        private val registrations = mutableMapOf<String, (Pet, String) -> PetEntity>()
+        private val registrations = mutableMapOf<String, (Pet, String, Player) -> PetEntity>()
 
         @JvmStatic
-        fun registerPetEntity(id: String, parse: (Pet, String) -> PetEntity) {
+        fun registerPetEntity(id: String, parse: (Pet, String, Player) -> PetEntity) {
             registrations[id] = parse
         }
 
         @JvmStatic
-        fun create(pet: Pet): PetEntity {
-            val texture = pet.entityTexture
+        fun create(pet: Pet, player: Player): PetEntity {
+            val texture = pet.getEntityTextureWithSkin(player)
 
             if (!texture.contains(":")) {
-                return SkullPetEntity(pet)
+                return SkullPetEntity(pet, player)
             }
 
             val id = texture.split(":")[0]
-            val parse = registrations[id] ?: return SkullPetEntity(pet)
-            return parse(pet, texture.removePrefix("$id:"))
+            val parse = registrations[id] ?: return SkullPetEntity(pet, player)
+            return parse(pet, texture.removePrefix("$id:"), player)
         }
     }
 }

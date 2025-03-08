@@ -39,6 +39,9 @@ permissions:
       ecopets.command.reset: true
       ecopets.command.activate: true
       ecopets.command.deactivate: true
+      ecopets.command.skin: true
+      ecopets.command.skin.set: true
+      ecopets.command.skin.remove: true
 
   ecopets.command.reload:
     description: Allows reloading the config
@@ -69,6 +72,15 @@ permissions:
     default: true
   ecopets.command.deactivate:
     description: Allows the use of /pets deactivate.
+    default: true
+  ecopets.command.skin:
+    description: Allows the use of /pets skin.
+    default: true
+  ecopets.command.skin.set:
+    description: Allows the use of /pets skin set.
+    default: true
+  ecopets.command.skin.remove:
+    description: Allows the use of /pets skin remove.
     default: true
 
   ecopets.xpmultiplier.50percent:

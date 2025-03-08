@@ -103,7 +103,7 @@ class PetDisplay(
             }
 
             val location = getLocation(player)
-            val stand = pet.makePetEntity().spawn(location)
+            val stand = pet.makePetEntity(player).spawn(location)
 
             trackedEntities[player.uniqueId] = PetArmorStand(stand, pet)
         }
@@ -137,6 +137,17 @@ class PetDisplay(
     @EventHandler
     fun onWorldChange(event: PlayerChangedWorldEvent) {
         remove(event.player)
+    }
+
+    fun refresh(player: Player) {
+        remove(player)
+        tickPlayer(player)
+    }
+
+    fun refresh() {
+        for (player in Bukkit.getOnlinePlayers()) {
+            refresh(player)
+        }
     }
 
     private data class PetArmorStand(
